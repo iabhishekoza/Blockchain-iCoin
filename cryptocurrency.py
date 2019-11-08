@@ -6,15 +6,31 @@ __version__ = "1.0.0"
 # Every time a block is mine, 5 pending transactions are passed in each block
 # Pending transactions are moved to complete transactions once mined
 
-# using requests v2.18.4
 # using mongodb v3.9.0
 
-import requests
-from pymongo import MongoClient
-from uuid import uuid5
-from urllib.parse import urlparse
-
-class TransactionDB:
+# from pymongo import MongoClient
+# from blockchain import Blockchain
+import constants
 
 
 class Transactions:
+    def __init__(self):
+        self.trnx = []
+
+    def add_trnx(self, sender, receiver, amount):
+        self.trnx.append({
+            'sender': sender,
+            'receiver': receiver,
+            'amount': amount
+        })
+        # database entry for trnx too
+
+    def get_trnx(self):
+        # get 5 transactions from list of transactions
+        if len(self.trnx) >= 5:
+            trnx_first_5 = self.trnx[:constants.limitTrnx()]
+            self.trnx = self.trnx[constants.limitTrnx():]
+        else:
+            trnx_first_5 = self.trnx
+            Transactions.trnx = []
+        return trnx_first_5

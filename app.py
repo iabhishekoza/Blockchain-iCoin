@@ -3,8 +3,10 @@ __version__ = "1.0.0"
 
 from mining import Mining
 from flask import Flask, jsonify
+import init
 
 # creating web instance
+objInit = init.CreateDB()
 objMine = Mining()
 app = Flask(__name__)
 

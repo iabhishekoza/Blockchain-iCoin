@@ -3,26 +3,37 @@ __version__ = "1.0.0"
 
 # Create the structure of blockchain
 # Using Flask == 0.12.2
-# Using Postman HTTP Client
+# Using Postman HTTP Client [test purpose]
+# using requests v2.18.4
 
-# Libraries
 import datetime
 import hashlib
 import json
+import requests
+from uuid import uuid5
+from urllib.parse import urlparse
+from cryptocurrency import Transactions
+import constants
+
+objTrnx = Transactions()
 
 
-class Blockchain:
+class Blockchain():
     def __init__(self):
         self.chain = []
-        self.create_block(proof = 1, previous_hash = '0')
+        self.create_block(proof=1, previous_hash='0')
+        self.nodes = set()
 
     def create_block(self, proof, previous_hash):
+        trnx = objTrnx.get_trnx()
         block = {
             'index': len(self.chain) + 1,
             'timestamp': str(datetime.datetime.now()),
             'proof': proof,
-            'previous_hash': previous_hash
+            'previous_hash': previous_hash,
+            'transactions': trnx
         }
+
         self.chain.append(block)
         return block
 
@@ -67,3 +78,19 @@ class Blockchain:
             previous_block = current_block
             block_index += 1
         return True
+
+    def handle_trnx(self):
+        Transactions.add_trnx()
+        previous_block = self.get_previous_block()
+        return previous_block['index'] + 1
+
+    def create_node(self, address):
+        parsed_url = urlparse(address)
+        self.nodes.add(parsed_url.netloc)
+
+    # def replace_chain(self):
+    #     network = self.nodes
+    #     longest_chain = None
+    #     max_length_chain = len(self.chain)
+    #     for node in network:
+    #
