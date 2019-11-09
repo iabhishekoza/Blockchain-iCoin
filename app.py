@@ -2,13 +2,18 @@ __author__ = "Abhishek Oza"
 __version__ = "1.0.0"
 
 from mining import Mining
-from flask import Flask, jsonify
+from cryptocurrency import Transactions
+from flask import Flask, jsonify, request, render_template
+from uuid import uuid4
+import constants
 import init
 
 # creating web instance
 objInit = init.CreateDB()
 objMine = Mining()
+objTrnx = Transactions()
 app = Flask(__name__)
+node_address = str(uuid4()).replace('-', '')
 
 # home page
 @app.route('/', methods=['GET'])
@@ -16,9 +21,32 @@ def homepage():
     response = {
         1: 'Welcome to Blockchain Demo',
         2: 'Please find below links...',
-        3: 'Mine a block -> localhost:5000/mine',
-        4: 'Fetch all blocks -> localhost:5000/chain',
-        5: 'Check if chain is valid -> localhost:5000/checkchain'
+        3: 'Send money -> localhost:5000/send',
+        4: 'Mine a block -> localhost:5000/mine',
+        5: 'Fetch all blocks -> localhost:5000/chain',
+        6: 'Check if chain is valid -> localhost:5000/checkchain'
+    }
+    return jsonify(response), 200
+
+# send money
+@app.route('/send')
+def send_money():
+    # return jsonify(objTrnx.add_trnx(node_address, constants.get_miner_name(), constants.get_miner_amount()))
+    return render_template("sendmoney.html")
+
+
+@app.route('/send', methods=['POST'])
+def record_trnx():
+    sender = request.form['sender']
+    receiver = request.form['receiver']
+    amount = request.form['amount']
+    objTrnx.add_trnx(sender, receiver, amount)
+
+    response = {
+        'sender': sender,
+        'receiver': receiver,
+        'amount': amount,
+        'Status': 'Success'
     }
     return jsonify(response), 200
 
@@ -39,4 +67,5 @@ def check_chain_valid():
 
 
 # running app
-app.run(host='0.0.0.0', port=5000)
+app.debug = True
+app.run(host=constants.get_ip_addr(), port=constants.get_port())

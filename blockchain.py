@@ -10,7 +10,6 @@ import datetime
 import hashlib
 import json
 import requests
-from uuid import uuid5
 from urllib.parse import urlparse
 from cryptocurrency import Transactions
 import constants
@@ -88,9 +87,19 @@ class Blockchain():
         parsed_url = urlparse(address)
         self.nodes.add(parsed_url.netloc)
 
-    # def replace_chain(self):
-    #     network = self.nodes
-    #     longest_chain = None
-    #     max_length_chain = len(self.chain)
-    #     for node in network:
-    #
+    def replace_chain(self):
+        network = self.nodes
+        longest_chain = None
+        max_len_chain = len(self.chain)
+        for node in network:
+            response = requests.get(f'http://{node}/{constants.get_chain_response()}')
+            if response.status_code == 200:
+                len_chain = response.json()['number of blocks']
+                chain = response.json()['chain']
+                if len_chain > max_len_chain and self.is_chain_valid():
+                    max_len_chain = len_chain
+                    longest_chain = chain
+        if longest_chain:
+            self.chain = longest_chain
+            return True
+        return False

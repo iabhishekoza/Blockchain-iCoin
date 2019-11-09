@@ -2,10 +2,13 @@ __author__ = "Abhishek Oza"
 __version__ = "1.0.0"
 
 from blockchain import Blockchain
+from cryptocurrency import Transactions
+import constants
 from flask import jsonify
 
 # create blockchain instance
 objChain = Blockchain()
+objTrnx = Transactions()
 
 
 class Mining:
@@ -21,7 +24,8 @@ class Mining:
             'index': new_block['index'],
             'timestamp': new_block['timestamp'],
             'proof': new_block['proof'],
-            'previous_hash': new_block['previous_hash']
+            'previous_hash': new_block['previous_hash'],
+            'transactions': new_block['transactions']
         }
         return response
 
