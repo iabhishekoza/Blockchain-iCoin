@@ -4,7 +4,6 @@ __version__ = "1.0.0"
 from mining import Mining
 from cryptocurrency import Transactions
 from flask import Flask, jsonify, request, render_template
-from uuid import uuid4
 import constants
 import init
 
@@ -13,7 +12,6 @@ objInit = init.CreateDB()
 objMine = Mining()
 objTrnx = Transactions()
 app = Flask(__name__)
-node_address = str(uuid4()).replace('-', '')
 
 # home page
 @app.route('/', methods=['GET'])
@@ -64,6 +62,16 @@ def get_chain():
 @app.route('/checkchain', methods=['GET'])
 def check_chain_valid():
     return jsonify(objMine.check_valid_chain()), 200
+
+# all transaction records
+@app.route('/utxo', methods=['GET'])
+def get_all_transactions():
+    return jsonify(objInit.get_all_utxo()), 200
+
+# chains from db
+@app.route('/blocks', methods=['GET'])
+def get_blocks():
+    return jsonify(objInit.get_all_blocks()), 200
 
 
 # running app

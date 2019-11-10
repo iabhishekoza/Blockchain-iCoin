@@ -3,12 +3,13 @@ __version__ = "1.0.0"
 
 from blockchain import Blockchain
 from cryptocurrency import Transactions
-import constants
-from flask import jsonify
+from init import CreateDB
+import json
 
 # create blockchain instance
 objChain = Blockchain()
 objTrnx = Transactions()
+objInit = CreateDB()
 
 
 class Mining:
@@ -19,15 +20,19 @@ class Mining:
         new_block = objChain.create_block(proof, previous_hash)
         # print('New Block Created: ', new_block)
 
-        response = {
-            'message': 'Success! Block is mined',
-            'index': new_block['index'],
-            'timestamp': new_block['timestamp'],
-            'proof': new_block['proof'],
-            'previous_hash': new_block['previous_hash'],
-            'transactions': new_block['transactions']
-        }
-        return response
+        # block = {
+        #     'index': new_block['index'],
+        #     'timestamp': new_block['timestamp'],
+        #     'proof': new_block['proof'],
+        #     'previous_hash': new_block['previous_hash'],
+        #     'transactions': new_block['transactions']
+        # }
+        # database entry
+        objInit.add_mined_record(new_block)
+
+        response = {'message': 'Success! Block is mined'}
+        response.update(new_block)
+        return json.dumps(response, default=str)
 
     def get_chain(self):
         if len(objChain.chain) <= 0:

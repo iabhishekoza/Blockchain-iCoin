@@ -10,6 +10,7 @@ import datetime
 import hashlib
 import json
 import requests
+from uuid import uuid4
 from urllib.parse import urlparse
 from cryptocurrency import Transactions
 import constants
@@ -22,6 +23,7 @@ class Blockchain():
         self.chain = []
         self.create_block(proof=1, previous_hash='0')
         self.nodes = set()
+        self.node_address = str(uuid4()).replace('-', '')
 
     def create_block(self, proof, previous_hash):
         trnx = objTrnx.get_trnx()

@@ -10,7 +10,10 @@ __version__ = "1.0.0"
 
 # from pymongo import MongoClient
 # from blockchain import Blockchain
+from init import CreateDB
 import constants
+
+objDB = CreateDB()
 
 
 class Transactions:
@@ -18,12 +21,14 @@ class Transactions:
         self.trnx = []
 
     def add_trnx(self, sender, receiver, amount):
-        self.trnx.append({
+        new_trnx = {
             'sender': sender,
             'receiver': receiver,
             'amount': amount
-        })
-        # database entry for trnx too
+        }
+        self.trnx.append(new_trnx)
+        # database entry for each trnx
+        objDB.add_trnx_record(new_trnx)
 
     def get_trnx(self):
         # get 5 transactions from list of transactions

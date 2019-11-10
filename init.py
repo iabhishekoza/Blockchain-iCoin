@@ -3,18 +3,30 @@ __version__ = "1.0.0"
 
 import constants
 import pymongo
+import json
+
 
 class CreateDB:
     def __init__(self):
         self.client = pymongo.MongoClient("mongodb://localhost:27017/")
-        self.dbs = self.client.list_database_names()
-        if constants.trnxdb() not in self.dbs:
-            self.createTrnxDB()
-        if constants.minedBlockdb() not in self.dbs:
-            self.createMinedBlockDB()
+        self.db = self.db = self.client[constants.get_db()]
+        self.trnx_col = self.db[constants.get_trnx_col()]
+        self.mined_col = self.db[constants.get_mined_col()]
 
-    def createTrnxDB(self):
-        trnxDB = self.client[constants.trnxdb()]
+    def add_trnx_record(self, new_trnx):
+        self.trnx_col.insert_one(new_trnx)
 
-    def createMinedBlockDB(self):
-        minedBlockDB = self.client[constants.minedBlockdb()]
+    def add_mined_record(self, new_block):
+        self.mined_col.insert_one(new_block)
+
+    def get_all_utxo(self):
+        response = []
+        for record in self.trnx_col.find():
+            response.append(record)
+        return json.dumps(response, default=str)
+
+    def get_all_blocks(self):
+        response = []
+        for record in self.mined_col.find():
+            response.append(record)
+        return json.dumps(response, default=str)
